@@ -47,6 +47,31 @@ order by 1
 
 ## dia a dia
 
+with customers as (
+select client_user_id 
+from business_layer.bookings
+where client_user_id in (
+      select client_user_id 
+      from business_layer.walks
+      where status="finished") 
+or qty_previous_bookings_from_client>0),
+m1 as(
+  select user_id 
+  from business_layer.users 
+  where sign_up_at<= "2019-12-14"
+)
+select date( first_page_search_at ) as wave,
+count(distinct user_id) as searchers
+from business_layer.searches
+where checkin_date < "2020-02-25" 
+      and checkout_date > "2020-02-21"
+      and user_id  in ( select client_user_id from customers )
+      and first_page_search_at >="2019-11-01"
+      group  by 1
+having wave is not null
+order by 1
+
+### searchers
 
 ##################-----------MUERTOS---------------################################################ 
 
