@@ -23,3 +23,26 @@ group  by 1
 order by 1
 
 ###### conversao por período
+
+with customers as (
+select client_user_id 
+from business_layer.bookings
+where client_user_id in (
+      select client_user_id 
+      from business_layer.walks
+      where status="finished") 
+or qty_previous_bookings_from_client>0)
+select date(first_message_at) as wave,
+      count(distinct case when has_converted then client_user_id end)/count(distinct client_user_id) as conversion, 
+      count(distinct client_user_id) as interessados
+from business_layer.bookings
+where checkin_date < "2020-02-25" 
+      and checkout_date > "2020-02-21"
+      and client_user_id in ( 
+          select client_user_id from customers
+          )
+      and first_message_at>="2019-11-01"
+group  by 1
+order by 1
+
+## dia a dia
